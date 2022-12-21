@@ -74,7 +74,7 @@ router.post('/forgotPassword',(req,res) => {
                     from:process.env.EMAIL,
                     to:result[0].email,
                     subject:'Password by cafe management system',
-                    html:'<p><b>Your login details for cafe management system </b><br><b>Email: </b>'+result[0].email+'<br><b>Password:</b>'+result[0].password+'<br><a href="http://localhost:4200/">Click here to login</a> </p>'
+                    html:'<p><b>Your login details for cafe management system </b><br><b>Email: </b>'+result[0].email+'<br><b>Password:</b>'+result[0].password+'<br><a href="http://localhost:4200/">Click here to login</a></p>'
                 };
                 transporter.sendMail(mailOption,function (error,info) {
                     if (error){
@@ -90,5 +90,37 @@ router.post('/forgotPassword',(req,res) => {
             res.status(500).json(err)
         }
     })
-})
+});
+
+router.get('/get',(req,res) => {
+     query = "select id,name,email,contactNumber,status from user where  role='user'  ";
+     connection.query(query,(err,result) => {
+         if (!err) {
+             return res.status(200).json(result);
+         }else {
+             return res.status(500).json(err);
+         }
+     })
+
+});
+
+router.get('/checkToken',(req,res) => {
+    return res.status(200).json({message:"true"})
+});
+
+router.patch('/update',(req,res) => {
+    let user = req.body;
+    query = "update user set status = ? where id = ?"
+    connection.query(query,[user.status,user.id],(err,result) => {
+        if (!err) {
+            if (result.affectedRows === 0){
+                return res.status(404).json({message:"User id does not exists "})
+            }
+            return res.status(200).json({message:" User update successfully "})
+        }else {
+            return res.status(500).json(err);
+        }
+    })
+});
+
 module.exports = router;
