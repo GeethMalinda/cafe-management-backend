@@ -5,6 +5,8 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const nodeMailer = require('nodemailer');
 require('dotenv').config();
+let auth = require('../services/authentication');
+let checkRole = require('../services/checkRole')
 
 router.post('/signup', (req, res) => {
     let user = req.body;
@@ -92,7 +94,7 @@ router.post('/forgotPassword',(req,res) => {
     })
 });
 
-router.get('/get',(req,res) => {
+router.get('/get',auth.authenticationToken,(req,res) => {
      query = "select id,name,email,contactNumber,status from user where  role='user'  ";
      connection.query(query,(err,result) => {
          if (!err) {
@@ -104,11 +106,11 @@ router.get('/get',(req,res) => {
 
 });
 
-router.get('/checkToken',(req,res) => {
+router.get('/checkToken',auth.authenticationToken,(req,res) => {
     return res.status(200).json({message:"true"})
 });
 
-router.patch('/update',(req,res) => {
+router.patch('/update',auth.authenticationToken,(req,res) => {
     let user = req.body;
     query = "update user set status = ? where id = ?"
     connection.query(query,[user.status,user.id],(err,result) => {
