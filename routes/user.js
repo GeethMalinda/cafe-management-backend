@@ -94,7 +94,27 @@ router.post('/forgotPassword',(req,res) => {
     })
 });
 
-router.get('/get',auth.authenticationToken,(req,res) => {
+router.post('changePassword',(req, res) => {
+    const user = req.body;
+    const email = req.locals.email;
+    let query = "select * from user where  email = ? and password = ? ";
+    connection.query(query,[email,user.oldPassword],(err,result) => {
+        if(!err){
+            if (result.length <= 0){
+                return res.status(400).json({message:"Incorrect old password"})
+            }else if (result[0].password === user.oldPassword){
+
+            }else {
+                return res.status(400).json({message:"Something went wrong.Please try again later"});
+
+            }
+        }else {
+            return res.status(500).json(err);
+        }
+    })
+})
+
+router.get('/get',auth.authenticationToken,checkRole.checkRole,(req,res) => {
      query = "select id,name,email,contactNumber,status from user where  role='user'  ";
      connection.query(query,(err,result) => {
          if (!err) {
@@ -106,7 +126,7 @@ router.get('/get',auth.authenticationToken,(req,res) => {
 
 });
 
-router.get('/checkToken',auth.authenticationToken,(req,res) => {
+router.get('/checkToken',auth.authenticationToken,checkRole.checkRole,(req,res) => {
     return res.status(200).json({message:"true"})
 });
 
