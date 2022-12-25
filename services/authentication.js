@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const authenticationToken = (req, res, next) => {
     try{
         const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split[" "][1];
+        const token = authHeader && authHeader.split(" ")[1];
 
         if (token === null) return res.sendStatus(401);
 
@@ -12,7 +12,7 @@ const authenticationToken = (req, res, next) => {
             if (err) {
                 return res.sendStatus(403);
             }
-            response.locals = response;
+            res.locals = response;
             next();
         })
     }catch (e) {
