@@ -94,9 +94,9 @@ router.post('/forgotPassword',(req,res) => {
     })
 });
 
-router.post('changePassword',(req, res) => {
+router.post('/changePassword',auth.authenticationToken,(req, res) => {
     const user = req.body;
-    const email = req.locals.email;
+    const email = res.locals.email;
     let query = "select * from user where  email = ? and password = ? ";
     connection.query(query,[email,user.oldPassword],(err,result) => {
         if(!err){
