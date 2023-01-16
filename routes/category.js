@@ -6,10 +6,10 @@ let checkRole = require('../services/checkRole')
 
 router.post('/add',auth.authenticationToken,checkRole.checkRole,((req, res) => {
     let category = req.body;
-    query = "INSERT INTO category (name) value()";
+    query = "INSERT INTO category (name) value (?)";
     connection.query(query,[category.name],((err, result) => {
         if (!err){
-            return res.status(200).json({message:"Category Added Successfully"})
+             return res.status(200).json({message:"Category Added Successfully"})
         }else {
             return res.status(500).json(err)
         }
@@ -26,3 +26,22 @@ router.get('/get',auth.authenticationToken,((req, res, next) => {
         }
     }))
 }))
+
+//affected rows === 0 (shared id is wrong)
+
+router.patch('/update',auth.authenticationToken,checkRole.checkRole,((req, res) => {
+    let product = req.body;
+    query = "update category set name = ? where id = ?";
+    connection.query(query,[product.name,product.id],(err, result) => {
+        if (!err){
+            if (result.affectedRows === 0) {
+                return res.status(404).json({message:"Category Id Does not found"})
+            }
+            return res.status(200).json({message:"Category Updates Successfully"})
+        }else {
+            return res.status(500).json(err)
+        }
+    })
+}))
+
+module.exports = router;
